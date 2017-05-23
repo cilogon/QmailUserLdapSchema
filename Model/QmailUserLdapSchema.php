@@ -41,24 +41,28 @@ class QmailUserLdapSchema extends AppModel
   */
   public function assemblePluginAttributes($configuredAttributes, $provisioningData)
   {
-    $attrs = array( );
-//  return $attrs; There should be only but but we loop for forms sake.
-    foreach ($configuredAttributes as $attr => $cfg) {
-        if ($attr == 'mailAlternateAddress') {
-            $attrs[$attr] = array();
-            $this->log("Found mailAlternateAddress " . print_r($cfg, true));
-            foreach ($provisioningData['EmailAddress'] as $emailAddy) {
-                $this->log("Found EmailAddress " . print_r($emailAddy, true));
+    //$this->log("Got this configuredAttributes" . print_r($configuredAttributes, true), LOG_DEBUG);
+    //$this->log("Got this provisioningData" . print_r($provisioningData, true), LOG_DEBUG);
 
-                if (isset($cfg['export']) && $cfg['export'] == 1 && isset($emailAddy['type'])
-                   && $emailAddy['type'] == $cfg['type']) {
-                    $attrs[$attr][] = $emailAddy['mail'];
-                }
-            }
-        }
-    }
+      $attrs = array( );
+    //$this->log("array key has EmailAddress: " . array_key_exists('EmailAddress', $provisioningData), LOG_DEBUG);
+      if (array_key_exists('EmailAddress', $provisioningData)) {
+          //  return $attrs; There should be only but but we loop for forms sake.
+          foreach ($configuredAttributes as $attr => $cfg) {
+              if ($attr == 'mailAlternateAddress') {
+                  $attrs[$attr] = array();
+                  foreach ($provisioningData['EmailAddress'] as $emailAddy) {
+                    //$this->log("Found EmailAddress " . print_r($emailAddy, true), LOG_DEBUG);
 
-      $this->log("Returning these email addresses" . print_r($attrs, true));
+                      if (isset($cfg['export']) && $cfg['export'] == 1 && isset($emailAddy['type'])
+                    && $emailAddy['type'] == $cfg['type']) {
+                          $attrs[$attr][] = $emailAddy['mail'];
+                      }
+                  }
+              }
+          }
+      }
+    //$this->log("Returning these email addresses" . print_r($attrs, true) . " array size: " . count($attrs), LOG_DEBUG);
       return $attrs;
   }
 
